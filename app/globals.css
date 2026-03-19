@@ -1,26 +1,263 @@
 @import "tailwindcss";
 
+@theme {
+  --color-off-white: #F2F0EA;
+  --color-near-black: #111010;
+  --color-mid-gray: #8A8880;
+  --color-light-gray: #D8D5CE;
+  --color-accent: #E8E4DC;
+
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --off-white: #F2F0EA;
+  --near-black: #111010;
+  --mid-gray: #8A8880;
+  --light-gray: #D8D5CE;
+  --accent: #E8E4DC;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--off-white);
+  color: var(--near-black);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Hide mobile menu button on desktop */
+.nav-mobile-menu {
+  display: none;
+}
+
+/* Hide hero custom cursor on touch devices (no hover) */
+@media (hover: none) {
+  .hero-cursor {
+    display: none !important;
+  }
+}
+
+/* ---- MOBILE RESPONSIVE (768px) ---- */
+@media (max-width: 768px) {
+  nav {
+    padding: 20px 24px !important;
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+
+  .nav-mobile-menu {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Hero */
+  .hero-section {
+    padding: 0 24px 48px !important;
+  }
+
+  .hero-scroll-hint {
+    left: 24px !important;
+  }
+
+  /* Work grid — stack to single column */
+  .work-section {
+    padding: 80px 24px !important;
+  }
+
+  .work-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .work-grid > * {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+    min-height: 280px !important;
+  }
+
+  .work-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    margin-bottom: 40px !important;
+  }
+
+  /* About teaser — stack */
+  .about-teaser-section {
+    padding: 80px 24px !important;
+    grid-template-columns: 1fr !important;
+    gap: 60px !important;
+  }
+
+  .about-teaser-stats {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  .about-teaser-stats > * {
+    margin-top: 0 !important;
+  }
+
+  /* Clients — 2 cols on mobile */
+  .clients-section {
+    padding: 60px 24px 80px !important;
+  }
+
+  .clients-grid-inner {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .clients-grid-inner > * {
+    padding: 24px 16px !important;
+    font-size: 11px !important;
+  }
+
+  /* Footer */
+  .footer-section {
+    padding: 80px 24px !important;
+  }
+
+  .footer-content {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 48px !important;
+  }
+
+  /* Case study hero */
+  .case-hero {
+    padding: 100px 24px 48px !important;
+  }
+
+  .case-hero-back {
+    top: 24px !important;
+    left: 24px !important;
+  }
+
+  .case-hero-tag {
+    top: 24px !important;
+    right: 24px !important;
+  }
+
+  /* Case study statement */
+  .case-statement {
+    padding: 80px 24px !important;
+  }
+
+  /* Case study info bar — stack */
+  .info-bar {
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+    gap: 24px !important;
+    padding: 24px !important;
+  }
+
+  .info-bar > * {
+    border-right: none !important;
+    padding: 0 !important;
+    padding-left: 0 !important;
+    border-bottom: 1px solid var(--light-gray) !important;
+  }
+
+  .info-bar > *:last-child {
+    border-bottom: none !important;
+  }
+
+  /* Case study brief/role — stack */
+  .brief-role-section {
+    padding: 80px 24px !important;
+    grid-template-columns: 1fr !important;
+    gap: 48px !important;
+  }
+
+  /* Case study images */
+  .case-images-section {
+    padding: 0 24px 80px !important;
+  }
+
+  /* Image layout — full width on mobile */
+  .image-layout-half,
+  .image-layout-feature,
+  .image-layout-three {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Outcome section */
+  .case-outcome {
+    padding: 80px 24px !important;
+  }
+
+  /* Next project link */
+  .next-project-link {
+    padding: 60px 24px !important;
+  }
+
+  /* About page */
+  .about-hero {
+    padding: 100px 24px 60px !important;
+  }
+
+  .about-body {
+    padding: 80px 24px !important;
+  }
+
+  .about-experience {
+    padding: 0 24px 80px !important;
+  }
+
+  .about-experience-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* Process ticker */
+  .process-ticker {
+    padding: 48px 0 !important;
+  }
+
+  /* Reel section - play button smaller on mobile */
+  .reel-play-btn {
+    width: 64px !important;
+    height: 64px !important;
+  }
+}
+
+
+/* ---- ANIMATIONS ---- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
