@@ -47,7 +47,9 @@ Each project page is built from one MDX file. **Nothing is hardcoded.** You cont
 |-------|----------------|---------|
 | `heroImage` | Bento card thumbnail on homepage | `heroImage: /work/balance/BalanceThumb.jpg` |
 | `hoverVideo` | Bento card hover (plays when you hover) | `hoverVideo: /work/hello-kitty/hellokitty_hover.webm` |
-| `heroVideo` | Case study hero — looping muted background | `heroVideo: /work/balance/Balance_TitleSequence.webm` |
+| `hoverVideoMp4` | Hover video MP4 fallback for iOS | `hoverVideoMp4: /work/balance/BalanceGFX_Hover.mp4` |
+| `heroVideo` | Case study hero — looping muted background (WebM) | `heroVideo: /work/balance/Balance_TitleSequence.webm` |
+| `heroVideoMp4` | MP4 fallback for iOS (Safari doesn't support WebM) | `heroVideoMp4: /work/balance/Balance_TitleSequence.mp4` |
 | `heroStill` | Case study hero — still image (if no video) | `heroStill: /work/balance/BalanceThumb.jpg` |
 | `images` | Project page body — the scrollable gallery | See below |
 
@@ -79,13 +81,44 @@ The `images:` array controls the gallery. Each entry has:
     caption: Optional caption
 ```
 
-**Example — add a video:**
+**Example — add a video (include videoMp4 for iOS, poster for mobile):**
 ```yaml
   - src: /work/balance/Balance_TitleSequence.webm
+    videoMp4: /work/balance/Balance_TitleSequence.mp4
+    poster: /work/balance/BalanceThumb.jpg
     layout: full
     type: video
     caption: Main title sequence
 ```
+- `videoMp4` — MP4 fallback for iOS (Safari doesn't support WebM)
+- `poster` — Static thumbnail to show before play (fixes black frame on iOS; optional)
+- `gifLike` — Autoplay, loop, muted, no controls (treat video like a GIF; use for short looping clips)
+
+**Example — GIF-like looping video (no controls):**
+```yaml
+  - src: /work/balance/Bal_CaseStudy_010_Research_001.webm
+    layout: half
+    gifLike: true
+```
+
+**Section divider** (line with label):
+```yaml
+  - type: divider
+    label: Documentary Graphics Package
+```
+
+**Section header** (label above next item):
+```yaml
+  - type: header
+    label: Living in Balance - Supplementary Video Podcast Intro for YouTube
+```
+
+**Generate posters from WebM (when you don't have JPGs):**
+```bash
+npm run posters:dr-pepper
+# Or for any project: ./scripts/generate-video-posters.sh [project-slug]
+```
+Requires ffmpeg (`brew install ffmpeg`). Extracts a frame at 0.5s from each WebM → `[name]_poster.jpg`.
 
 ---
 

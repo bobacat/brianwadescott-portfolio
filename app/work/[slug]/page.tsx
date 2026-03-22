@@ -5,6 +5,7 @@ import { getAllProjectSlugs, getProject, getAllProjects } from "@/lib/mdx";
 import ImageLayout from "@/components/ImageLayout";
 import Footer from "@/components/Footer";
 import NextProjectLink from "@/components/NextProjectLink";
+import CaseHeroVideo from "@/components/CaseHeroVideo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -36,7 +37,10 @@ export default async function CaseStudyPage({ params }: Props) {
   const nextProject = allProjects.find((p) => p.slug === fm.nextProject);
 
   const isDark =
-    fm.bg === "#111010" || fm.bg === "#1A0A0A" || fm.textColor === "#ffffff";
+    fm.bg === "#111010" ||
+    fm.bg === "#1A0A0A" ||
+    fm.bg === "#0A0A0F" ||
+    fm.textColor === "#ffffff";
 
   return (
     <main>
@@ -55,35 +59,14 @@ export default async function CaseStudyPage({ params }: Props) {
           overflow: "hidden",
         }}
       >
-        {/* Optional: video or still background — per-project */}
+        {/* Optional: video or still background — per-project (iOS fallback for WebM) */}
         {fm.heroVideo && (
-          <>
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                opacity: 0.65,
-                pointerEvents: "none",
-              }}
-            >
-              <source src={fm.heroVideo} type="video/webm" />
-            </video>
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: `linear-gradient(to bottom, transparent 0%, ${fm.bg} 85%)`,
-                pointerEvents: "none",
-              }}
-            />
-          </>
+          <CaseHeroVideo
+            heroVideo={fm.heroVideo}
+            heroVideoMp4={fm.heroVideoMp4}
+            heroImage={fm.heroImage}
+            bg={fm.bg}
+          />
         )}
         {!fm.heroVideo && fm.heroStill && (
           <>
@@ -247,7 +230,15 @@ export default async function CaseStudyPage({ params }: Props) {
             opacity: 0.85,
           }}
         >
-          {fm.statement}
+          {fm.statementHighlight ? (
+            <>
+              {fm.statement.split(fm.statementHighlight)[0]}
+              <span style={{ color: fm.accent }}>{fm.statementHighlight}</span>
+              {fm.statement.split(fm.statementHighlight)[1]}
+            </>
+          ) : (
+            fm.statement
+          )}
         </p>
       </section>
 
@@ -256,9 +247,9 @@ export default async function CaseStudyPage({ params }: Props) {
         className="info-bar"
         style={{
           padding: "32px 48px",
-          background: "var(--off-white)",
-          borderTop: "1px solid var(--light-gray)",
-          borderBottom: "1px solid var(--light-gray)",
+          background: isDark ? fm.bg : "var(--off-white)",
+          borderTop: `1px solid ${isDark ? `${fm.accent}20` : "var(--light-gray)"}`,
+          borderBottom: `1px solid ${isDark ? `${fm.accent}20` : "var(--light-gray)"}`,
           display: "flex",
           gap: "0",
         }}
@@ -275,7 +266,9 @@ export default async function CaseStudyPage({ params }: Props) {
               flex: 1,
               padding: "0 32px",
               borderRight:
-                i < arr.length - 1 ? "1px solid var(--light-gray)" : "none",
+                i < arr.length - 1
+                  ? `1px solid ${isDark ? `${fm.accent}20` : "var(--light-gray)"}`
+                  : "none",
               paddingLeft: i === 0 ? 0 : "32px",
             }}
           >
@@ -285,7 +278,7 @@ export default async function CaseStudyPage({ params }: Props) {
                 fontSize: "10px",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
-                color: "var(--mid-gray)",
+                color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
                 marginBottom: "6px",
               }}
             >
@@ -296,7 +289,7 @@ export default async function CaseStudyPage({ params }: Props) {
                 fontFamily: "var(--font-dm-sans), sans-serif",
                 fontSize: "14px",
                 fontWeight: 500,
-                color: "var(--near-black)",
+                color: isDark ? fm.textColor : "var(--near-black)",
                 lineHeight: 1.4,
               }}
             >
@@ -306,7 +299,7 @@ export default async function CaseStudyPage({ params }: Props) {
         ))}
       </section>
 
-      {/* ── D. BRIEF + ROLE ── */}
+      {/* ── D. BRIEF + ROLE (or CONCEPT) ── */}
       <section
         className="brief-role-section"
         style={{
@@ -314,6 +307,7 @@ export default async function CaseStudyPage({ params }: Props) {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "80px",
+          background: isDark ? fm.bg : undefined,
         }}
       >
         <div>
@@ -322,7 +316,7 @@ export default async function CaseStudyPage({ params }: Props) {
               fontSize: "11px",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              color: "var(--mid-gray)",
+              color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
               marginBottom: "24px",
             }}
           >
@@ -333,7 +327,7 @@ export default async function CaseStudyPage({ params }: Props) {
               fontFamily: "var(--font-dm-sans), sans-serif",
               fontSize: "17px",
               lineHeight: 1.7,
-              color: "#4A4845",
+              color: isDark ? "rgba(255,255,255,0.85)" : "#4A4845",
             }}
           >
             {fm.brief}
@@ -345,28 +339,70 @@ export default async function CaseStudyPage({ params }: Props) {
               fontSize: "11px",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              color: "var(--mid-gray)",
+              color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
               marginBottom: "24px",
             }}
           >
-            My Role
+            {fm.concept ? "The Concept" : "My Role"}
           </p>
           <p
             style={{
               fontFamily: "var(--font-dm-sans), sans-serif",
               fontSize: "17px",
               lineHeight: 1.7,
-              color: "#4A4845",
+              color: isDark ? "rgba(255,255,255,0.85)" : "#4A4845",
             }}
           >
-            {fm.roleDetail}
+            {fm.concept || fm.roleDetail}
           </p>
         </div>
       </section>
 
+      {/* ── D2. PRODUCTION (optional) ── */}
+      {fm.production && (
+        <section
+          className="production-section"
+          data-nav={isDark ? "dark" : undefined}
+          style={{
+            padding: "120px 48px",
+            background: fm.bg,
+            borderTop: `1px solid ${fm.accent}20`,
+          }}
+        >
+          <p
+            style={{
+              fontSize: "11px",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
+              marginBottom: "24px",
+            }}
+          >
+            The Production
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-dm-sans), sans-serif",
+              fontSize: "17px",
+              lineHeight: 1.7,
+              color: isDark ? "rgba(255,255,255,0.85)" : "#4A4845",
+              maxWidth: "720px",
+            }}
+          >
+            {fm.production}
+          </p>
+        </section>
+      )}
+
       {/* ── E. VISUALS ── */}
-      <section className="case-images-section" style={{ padding: "0 48px 120px" }}>
-        <ImageLayout images={fm.images} accent={fm.accent} />
+      <section
+        className="case-images-section"
+        style={{
+          padding: "0 48px 120px",
+          background: isDark ? fm.bg : undefined,
+        }}
+      >
+        <ImageLayout images={fm.images} accent={fm.accent} isDark={isDark} />
       </section>
 
       {/* ── F. OUTCOME ── */}

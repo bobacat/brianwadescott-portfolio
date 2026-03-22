@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 const clients = [
   "Warner Bros",
   "Google",
@@ -22,6 +24,19 @@ const clients = [
 ];
 
 export default function ClientsGrid() {
+  const [cols, setCols] = useState(6);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setCols(mq.matches ? 2 : 6);
+    const h = () => setCols(mq.matches ? 2 : 6);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, []);
+
+  const n = clients.length;
+  const lastRowStart = n - cols;
+
   return (
     <section
       className="clients-section"
@@ -57,7 +72,8 @@ export default function ClientsGrid() {
         className="clients-grid-inner"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(6, 1fr)",
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          border: "1px solid var(--light-gray)",
         }}
       >
         {clients.map((client, i) => (
@@ -68,15 +84,13 @@ export default function ClientsGrid() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              borderRight: "1px solid var(--light-gray)",
-              borderBottom: "1px solid var(--light-gray)",
-              borderTop: i < 6 ? "1px solid var(--light-gray)" : "none",
-              borderLeft: i % 6 === 0 ? "1px solid var(--light-gray)" : "none",
+              borderRight: i % cols !== cols - 1 ? "1px solid var(--light-gray)" : "none",
+              borderBottom: i < lastRowStart ? "1px solid var(--light-gray)" : "none",
               fontFamily: "var(--font-bricolage), sans-serif",
               fontWeight: 700,
               fontSize: "13px",
               letterSpacing: "0.05em",
-              color: "var(--light-gray)",
+              color: "var(--mid-gray)",
               textAlign: "center",
               transition: "color 0.3s ease",
               cursor: "default",
@@ -87,7 +101,7 @@ export default function ClientsGrid() {
             }
             onMouseLeave={(e) =>
               ((e.currentTarget as HTMLElement).style.color =
-                "var(--light-gray)")
+                "var(--mid-gray)")
             }
           >
             {client}

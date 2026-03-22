@@ -55,7 +55,12 @@ export default function NextProjectLink({
         }}
       >
         {project.title}
-        <span style={{ fontSize: "0.6em", opacity: 0.5 }}>↗</span>
+        <span style={{ display: "inline-flex", alignItems: "center", opacity: 0.5 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 17L17 7" />
+            <path d="M7 7h10v10" />
+          </svg>
+        </span>
       </p>
     </Link>
   );

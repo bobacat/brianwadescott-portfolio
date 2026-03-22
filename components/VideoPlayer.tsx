@@ -4,16 +4,22 @@ import { useEffect, useRef, useState } from "react";
 
 interface VideoPlayerProps {
   src: string;
+  srcMp4?: string; // MP4 fallback for iOS (no WebM)
   poster?: string;
+  posterTime?: number; // Seconds, or 0.5 = 50% through (generates poster from video)
   autoPlay?: boolean;
   title?: string; // Subtle overlay when paused (e.g. clip name)
+  objectFit?: "cover" | "contain"; // contain = fit proportionally without cropping (default: cover)
 }
 
 export default function VideoPlayer({
   src,
+  srcMp4,
   poster,
+  posterTime,
   autoPlay = false,
   title,
+  objectFit = "cover",
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -21,8 +27,61 @@ export default function VideoPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [muted, setMuted] = useState(false);
-  const [showControls, setShowControls] = useState(true);
+  const [showControls, setShowControls] = useState(false);
+  const [generatedPoster, setGeneratedPoster] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const h = () => setIsMobile(mq.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, []);
+
+  // Generate poster from video at posterTime (e.g. 0.5 = 50% through)
+  // Use MP4 for poster on iOS (WebM doesn't load)
+  useEffect(() => {
+    if (!posterTime || poster || generatedPoster) return;
+    const video = document.createElement("video");
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    const supportsWebM = video.canPlayType("video/webm") !== "";
+    const posterSrc = !supportsWebM && srcMp4 ? srcMp4 : src;
+    const seekToFrame = () => {
+      const target =
+        posterTime < 1 && posterTime > 0
+          ? video.duration * posterTime
+          : video.duration >= posterTime
+            ? posterTime
+            : video.duration * 0.5;
+      video.currentTime = target;
+    };
+    const onSeeked = () => {
+      try {
+        if (video.videoWidth === 0) return;
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(video, 0, 0);
+          setGeneratedPoster(canvas.toDataURL("image/jpeg", 0.85));
+        }
+      } catch {
+        /* canvas blocked */
+      }
+    };
+    video.addEventListener("loadeddata", seekToFrame);
+    video.addEventListener("seeked", onSeeked);
+    video.src = posterSrc;
+    return () => {
+      video.removeEventListener("loadeddata", seekToFrame);
+      video.removeEventListener("seeked", onSeeked);
+    };
+  }, [src, srcMp4, posterTime, poster, generatedPoster]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -45,7 +104,12 @@ export default function VideoPlayer({
         setProgress((video.currentTime / video.duration) * 100);
       }
     };
-    const onPlay = () => setPlaying(true);
+    const onPlay = () => {
+      setPlaying(true);
+      setShowControls(true);
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+      hideTimer.current = setTimeout(() => setShowControls(false), 2500);
+    };
     const onPause = () => setPlaying(false);
 
     video.addEventListener("timeupdate", onTimeUpdate);
@@ -62,6 +126,7 @@ export default function VideoPlayer({
       video.removeEventListener("durationchange", updateDuration);
       video.removeEventListener("play", onPlay);
       video.removeEventListener("pause", onPause);
+      if (hideTimer.current) clearTimeout(hideTimer.current);
     };
   }, [autoPlay]);
 
@@ -93,7 +158,12 @@ export default function VideoPlayer({
   function requestFullscreen() {
     const video = videoRef.current;
     if (!video) return;
-    if (video.requestFullscreen) video.requestFullscreen();
+    // iOS Safari uses webkitEnterFullScreen for video elements
+    if (typeof (video as HTMLVideoElement & { webkitEnterFullScreen?: () => void }).webkitEnterFullScreen === "function") {
+      (video as HTMLVideoElement & { webkitEnterFullScreen: () => void }).webkitEnterFullScreen();
+    } else if (video.requestFullscreen) {
+      video.requestFullscreen();
+    }
   }
 
   function formatTime(s: number) {
@@ -103,7 +173,7 @@ export default function VideoPlayer({
     return `${m}:${sec.toString().padStart(2, "0")}`;
   }
 
-  function handleMouseMove() {
+  function handleInteraction() {
     setShowControls(true);
     if (hideTimer.current) clearTimeout(hideTimer.current);
     hideTimer.current = setTimeout(() => {
@@ -120,19 +190,28 @@ export default function VideoPlayer({
         position: "relative",
         cursor: showControls ? "default" : "none",
       }}
-      onMouseMove={handleMouseMove}
+      onMouseMove={handleInteraction}
       onMouseLeave={() => playing && setShowControls(false)}
+      onTouchStart={handleInteraction}
     >
       <video
         ref={videoRef}
-        style={{ width: "100%", height: "100%", display: "block" }}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "block",
+          objectFit,
+          objectPosition: objectFit === "contain" ? "center" : undefined,
+        }}
         playsInline
-        poster={poster}
+        poster={poster || generatedPoster || undefined}
         onClick={togglePlay}
-        src={src}
-      />
+      >
+        {srcMp4 && <source src={srcMp4} type="video/mp4" />}
+        <source src={src} type="video/webm" />
+      </video>
 
-      {/* Centered play overlay when paused — matches reel PlayPoster */}
+      {/* Centered play overlay when paused — smaller on mobile */}
       {!playing && (
         <div
           style={{
@@ -142,7 +221,7 @@ export default function VideoPlayer({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            gap: "32px",
+            gap: isMobile ? "16px" : "32px",
             cursor: "pointer",
             background: "rgba(0,0,0,0.25)",
             pointerEvents: "all",
@@ -155,7 +234,7 @@ export default function VideoPlayer({
             <p
               style={{
                 fontFamily: "var(--font-dm-sans), sans-serif",
-                fontSize: "11px",
+                fontSize: isMobile ? "10px" : "11px",
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.45)",
@@ -167,8 +246,8 @@ export default function VideoPlayer({
           )}
           <div
             style={{
-              width: "80px",
-              height: "80px",
+              width: isMobile ? "48px" : "80px",
+              height: isMobile ? "48px" : "80px",
               borderRadius: "50%",
               border: "1px solid rgba(255,255,255,0.4)",
               display: "flex",
@@ -178,8 +257,8 @@ export default function VideoPlayer({
             }}
           >
             <svg
-              width="22"
-              height="26"
+              width={isMobile ? 14 : 22}
+              height={isMobile ? 16 : 26}
               viewBox="0 0 22 26"
               fill="none"
               style={{ marginLeft: "3px" }}
@@ -193,19 +272,19 @@ export default function VideoPlayer({
         </div>
       )}
 
-      {/* Custom controls — delicate white */}
+      {/* Custom controls — hidden by default on mobile, show on tap */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
-          padding: "40px 28px 24px",
+          padding: isMobile ? "24px 20px 16px" : "40px 28px 24px",
           background:
             "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)",
           display: "flex",
           flexDirection: "column",
-          gap: "16px",
+          gap: isMobile ? "12px" : "16px",
           opacity: showControls ? 1 : 0,
           transition: "opacity 0.3s ease",
           pointerEvents: showControls ? "all" : "none",

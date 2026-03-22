@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ProjectFrontmatter } from "@/lib/mdx";
 
@@ -8,12 +8,15 @@ interface WorkGridProps {
   projects: ProjectFrontmatter[];
 }
 
+const MOBILE_BREAKPOINT = 768;
+
 const cardGridPositions = [
   { gridColumn: "1 / 8", gridRow: "1", minHeight: "520px" },
   { gridColumn: "8 / 13", gridRow: "1", minHeight: "520px" },
   { gridColumn: "1 / 5", gridRow: "2", minHeight: "380px" },
   { gridColumn: "5 / 9", gridRow: "2", minHeight: "380px" },
   { gridColumn: "9 / 13", gridRow: "2", minHeight: "380px" },
+  { gridColumn: "1 / 13", gridRow: "3", minHeight: "280px" },
 ];
 
 const titleSizes = [
@@ -22,9 +25,55 @@ const titleSizes = [
   "clamp(28px, 3vw, 44px)",
   "clamp(24px, 2.5vw, 38px)",
   "clamp(24px, 2.5vw, 38px)",
+  "clamp(28px, 3vw, 48px)",
 ];
 
 export default function WorkGrid({ projects }: WorkGridProps) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    setIsMobile(mq.matches);
+    const handler = () => setIsMobile(mq.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const updateFocusedCard = useCallback(() => {
+    if (!isMobile || !gridRef.current) return;
+    const viewportCenter = window.innerHeight / 2;
+    const viewportHeight = window.innerHeight;
+    let closestIndex: number | null = null;
+    let closestDist = Infinity;
+    cardRefs.current.forEach((card, i) => {
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      // Only consider cards that are at least partially visible
+      if (rect.bottom < 0 || rect.top > viewportHeight) return;
+      const cardCenter = rect.top + rect.height / 2;
+      const dist = Math.abs(cardCenter - viewportCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIndex = i;
+      }
+    });
+    setFocusedIndex(closestIndex);
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    updateFocusedCard();
+    window.addEventListener("scroll", updateFocusedCard, { passive: true });
+    window.addEventListener("resize", updateFocusedCard);
+    return () => {
+      window.removeEventListener("scroll", updateFocusedCard);
+      window.removeEventListener("resize", updateFocusedCard);
+    };
+  }, [isMobile, updateFocusedCard]);
+
   return (
     <section
       id="work"
@@ -55,18 +104,10 @@ export default function WorkGrid({ projects }: WorkGridProps) {
         >
           Selected Work
         </span>
-        <span
-          style={{
-            fontSize: "12px",
-            color: "var(--mid-gray)",
-            letterSpacing: "0.1em",
-          }}
-        >
-          0{projects.length} Projects
-        </span>
       </div>
 
       <div
+        ref={gridRef}
         className="work-grid"
         style={{
           display: "grid",
@@ -80,6 +121,9 @@ export default function WorkGrid({ projects }: WorkGridProps) {
             project={project}
             gridStyle={cardGridPositions[i] || cardGridPositions[0]}
             titleSize={titleSizes[i] || titleSizes[0]}
+            index={i}
+            isFocused={isMobile && focusedIndex !== null && focusedIndex === i}
+            cardRef={(el) => { cardRefs.current[i] = el; }}
           />
         ))}
       </div>
@@ -91,21 +135,47 @@ function ProjectCard({
   project,
   gridStyle,
   titleSize,
+  index,
+  isFocused,
+  cardRef,
 }: {
   project: ProjectFrontmatter;
   gridStyle: React.CSSProperties;
   titleSize: string;
+  index: number;
+  isFocused: boolean;
+  cardRef: (el: HTMLAnchorElement | null) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovering, setIsHovering] = useState(false);
   const hasHoverVideo = Boolean(
     project.hoverVideo && typeof project.hoverVideo === "string"
   );
+  // On mobile: play when focused (center of screen). On desktop: play on hover.
+  const isVideoActive = hasHoverVideo && (isHovering || isFocused);
+
+  // Play/pause video when isFocused changes (mobile)
+  useEffect(() => {
+    if (!hasHoverVideo || !videoRef.current) return;
+    if (isFocused) {
+      const v = videoRef.current;
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      // Load and play — browser picks MP4 or WebM from source elements
+      v.load();
+      v.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+    }
+  }, [isFocused, hasHoverVideo]);
 
   const isDark =
     project.bg === "#111010" ||
     project.bg === "#1A0A0A" ||
-    project.bg.toLowerCase() === "#111010";
+    project.bg === "#0A0A0F" ||
+    project.bg.toLowerCase() === "#111010" ||
+    project.bg.toLowerCase() === "#0a0a0f";
   const tagBg = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)";
   const tagColor = isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.4)";
   const arrowColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.3)";
@@ -118,15 +188,11 @@ function ProjectCard({
     setIsHovering(true);
     if (hasHoverVideo && videoRef.current) {
       const v = videoRef.current;
-      if (!v.src || v.src.endsWith("undefined")) {
-        v.src = project.hoverVideo!;
-        v.muted = true;
-        v.loop = true;
-        v.playsInline = true;
-        v.play().catch(() => {});
-      } else {
-        v.play().catch(() => {});
-      }
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.load();
+      v.play().catch(() => {});
     }
   }
 
@@ -142,15 +208,31 @@ function ProjectCard({
 
   return (
     <Link
+      ref={cardRef}
       href={`/work/${project.slug}`}
       style={{
         ...gridStyle,
         background: project.bg,
-        backgroundImage: project.heroImage
-          ? `url(${project.heroImage})`
-          : undefined,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundImage: (() => {
+          const layers: string[] = [];
+          if (project.heroImage) layers.push(`url(${project.heroImage})`);
+          if (project.bg === "#0A0A0F") {
+            layers.unshift(
+              "repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2px)"
+            );
+          }
+          return layers.length ? layers.join(", ") : undefined;
+        })(),
+        backgroundSize: project.bg === "#0A0A0F" && project.heroImage
+          ? "auto, cover"
+          : "cover",
+        backgroundPosition: (() => {
+          const imgPos = project.cardBackgroundPosition || "center";
+          if (project.bg === "#0A0A0F" && project.heroImage) {
+            return `0 0, ${imgPos}`; // scan lines, then hero position
+          }
+          return imgPos;
+        })(),
         position: "relative",
         overflow: "hidden",
         borderRadius: "4px",
@@ -162,29 +244,44 @@ function ProjectCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Hover video overlay — loads only on first hover */}
+      {/* Hover video overlay — centered via transform to prevent load-time jump */}
       {hasHoverVideo && (
-        <video
-          ref={videoRef}
-          preload="none"
-          muted
-          loop
-          playsInline
+        <div
           style={{
             position: "absolute",
             inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            opacity: isHovering ? 1 : 0,
+            overflow: "hidden",
+            opacity: isVideoActive ? 1 : 0,
             transition: "opacity 0.4s ease",
             pointerEvents: "none",
             zIndex: 0,
           }}
-        />
+        >
+          <video
+            key={project.slug}
+            ref={videoRef}
+            preload="metadata"
+            muted
+            loop
+            playsInline
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: project.cardBackgroundPosition || "center",
+            }}
+          >
+            {project.hoverVideoMp4 && (
+              <source src={project.hoverVideoMp4} type="video/mp4" />
+            )}
+            <source src={project.hoverVideo!} type="video/webm" />
+          </video>
+        </div>
       )}
       {/* Gradient overlay when video plays so text stays readable */}
-      {hasHoverVideo && isHovering && (
+      {hasHoverVideo && isVideoActive && (
         <div
           style={{
             position: "absolute",
@@ -233,13 +330,16 @@ function ProjectCard({
           <span
             className="card-arrow"
             style={{
-              fontSize: "20px",
+              display: "inline-flex",
+              alignItems: "center",
               transition: "transform 0.3s ease",
-              lineHeight: 1,
               color: arrowColor,
             }}
           >
-            ↗
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 17L17 7" />
+              <path d="M7 7h10v10" />
+            </svg>
           </span>
         </div>
 
@@ -271,23 +371,6 @@ function ProjectCard({
         </div>
       </div>
 
-      {/* Year badge for dark cards */}
-      {isDark && (
-        <span
-          style={{
-            position: "absolute",
-            top: "36px",
-            right: "36px",
-            fontSize: "11px",
-            letterSpacing: "0.1em",
-            color: "rgba(255,255,255,0.2)",
-            fontWeight: 400,
-            zIndex: 1,
-          }}
-        >
-          {project.year}
-        </span>
-      )}
     </Link>
   );
 }

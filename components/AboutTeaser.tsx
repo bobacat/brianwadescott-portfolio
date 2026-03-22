@@ -16,17 +16,27 @@ export default function AboutTeaser() {
       }}
     >
       <div>
-        <p
+        <div
+          className="about-header"
           style={{
-            fontSize: "11px",
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            color: "var(--mid-gray)",
-            marginBottom: "32px",
+            marginBottom: "64px",
+            paddingBottom: "20px",
+            borderBottom: "1px solid var(--light-gray)",
           }}
         >
-          About
-        </p>
+          <p
+            style={{
+              fontFamily: "var(--font-bricolage), sans-serif",
+              fontWeight: 700,
+              fontSize: "13px",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--near-black)",
+            }}
+          >
+            About
+          </p>
+        </div>
         <h2
           style={{
             fontFamily: "var(--font-bricolage), sans-serif",
@@ -86,75 +96,160 @@ export default function AboutTeaser() {
       </div>
 
       <div
-        className="about-teaser-stats"
+        className="about-teaser-bento"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "16px",
+          gridTemplateRows: "1fr 1fr",
+          gap: "20px",
+          minHeight: "340px",
         }}
       >
-        {[
-          {
-            number: "15+",
-            label: "Years directing creative work",
-            dark: false,
-            offsetTop: 0,
-          },
-          {
-            number: "$15M+",
-            label: "Revenue impact at RECUR",
-            dark: true,
-            offsetTop: 32,
-          },
-          {
-            number: "20+",
-            label: "Person teams led",
-            dark: false,
-            offsetTop: -32,
-          },
-          {
-            number: "ArtCenter",
-            label: "BFA Illustration, Honors",
-            dark: false,
-            offsetTop: 0,
-          },
-        ].map(({ number, label, dark, offsetTop }) => (
-          <div
-            key={number}
+        <div
+          className="bento-card bento-card-tall"
+          style={{
+            gridRow: "1 / -1",
+            padding: "32px",
+            background: "var(--accent)",
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <h3
             style={{
-              padding: "36px",
-              background: dark ? "var(--near-black)" : "var(--accent)",
-              borderRadius: "4px",
-              marginTop: `${offsetTop}px`,
-              color: dark ? "white" : "inherit",
+              fontFamily: "var(--font-bricolage), sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(18px, 2vw, 22px)",
+              letterSpacing: "-0.02em",
+              marginBottom: "16px",
+              color: "var(--near-black)",
             }}
           >
-            <p
+            Film/Television
+          </h3>
+          <p
+            style={{
+              fontSize: "15px",
+              lineHeight: 1.65,
+              color: "#4A4845",
+            }}
+          >
+            Title sequences, motion graphics, and visual effects for features and
+            broadcast. From indie documentaries to studio releases.
+          </p>
+          <div
+            style={{
+              marginTop: "20px",
+              fontSize: "13px",
+              lineHeight: 1.6,
+              color: "#4A4845",
+              opacity: 0.9,
+            }}
+          >
+            <p style={{ marginBottom: "8px" }}>
+              <strong>Credits include:</strong>
+            </p>
+            <ul
               style={{
-                fontFamily: "var(--font-bricolage), sans-serif",
-                fontWeight: 800,
-                fontSize: "clamp(28px, 3.5vw, 48px)",
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-                marginBottom: "8px",
-                color: dark ? "white" : "var(--near-black)",
+                margin: 0,
+                paddingLeft: 0,
+                listStyle: "none",
               }}
             >
-              {number}
-            </p>
-            <p
-              style={{
-                fontSize: "12px",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: dark ? "rgba(255,255,255,0.4)" : "var(--mid-gray)",
-                lineHeight: 1.5,
-              }}
-            >
-              {label}
-            </p>
+              {["It Chapter 2", "Avengers: Age of Ultron", "FastX", "Balance", "Arrow", "The Flash"].map(
+                (title) => (
+                  <li
+                    key={title}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: "var(--near-black)",
+                        fontSize: "10px",
+                        opacity: 0.6,
+                      }}
+                    >
+                      ›
+                    </span>
+                    <span>{title}</span>
+                  </li>
+                )
+              )}
+            </ul>
           </div>
-        ))}
+        </div>
+        <div
+          className="bento-card"
+          style={{
+            padding: "32px",
+            background: "var(--near-black)",
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <h3
+            style={{
+              fontFamily: "var(--font-bricolage), sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(18px, 2vw, 22px)",
+              letterSpacing: "-0.02em",
+              marginBottom: "16px",
+              color: "#ffffff",
+            }}
+          >
+            Advertising
+          </h3>
+          <p
+            style={{
+              fontSize: "15px",
+              lineHeight: 1.65,
+              color: "rgba(255,255,255,0.75)",
+            }}
+          >
+            Broadcast campaigns, Super Bowl spots, Times Square, and brand
+            launches for some of the most recognizable names in the world.
+          </p>
+        </div>
+        <div
+          className="bento-card"
+          style={{
+            padding: "32px",
+            background: "var(--accent)",
+            borderRadius: "4px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <h3
+            style={{
+              fontFamily: "var(--font-bricolage), sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(18px, 2vw, 22px)",
+              letterSpacing: "-0.02em",
+              marginBottom: "16px",
+              color: "var(--near-black)",
+            }}
+          >
+            Brand Storytelling
+          </h3>
+          <p
+            style={{
+              fontSize: "15px",
+              lineHeight: 1.65,
+              color: "#4A4845",
+            }}
+          >
+            Visual identity systems and brand worlds built to move across
+            digital, broadcast, and physical environments.
+          </p>
+        </div>
       </div>
     </section>
   );

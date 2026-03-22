@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAbout } from "@/lib/mdx";
 import Footer from "@/components/Footer";
+import AboutHeroVideo from "@/components/AboutHeroVideo";
 
 export const metadata: Metadata = {
   title: "About",
@@ -32,8 +33,18 @@ export default function AboutPage() {
           justifyContent: "flex-end",
           padding: "120px 48px 80px",
           borderBottom: "1px solid var(--light-gray)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        {fm.heroVideo && (
+          <AboutHeroVideo
+            heroVideo={fm.heroVideo}
+            heroVideoMp4={fm.heroVideoMp4}
+            heroImage={fm.heroImage}
+          />
+        )}
+        <div style={{ position: "relative", zIndex: 1 }}>
         <p
           style={{
             fontFamily: "var(--font-dm-sans), sans-serif",
@@ -76,6 +87,7 @@ export default function AboutPage() {
         >
           {fm.subhead}
         </p>
+        </div>
       </section>
 
       {/* BODY WITH CALLOUTS */}

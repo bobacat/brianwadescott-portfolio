@@ -16,8 +16,10 @@ const VideoPlayer = dynamic(() => import("@/components/VideoPlayer"), {
 //   3. Enable public access on the bucket
 //   4. Paste the public URL below
 const REEL_URL = "/videos/moreShinyReel2026.webm";
-// Poster: frame at this timestamp (seconds). Uses a still from the video — no separate image needed.
+const REEL_MP4_URL = "/videos/moreShinyReel2026.mp4"; // iOS fallback (no WebM)
+// Poster: frame at this timestamp (seconds). Static fallback for mobile (canvas capture can fail on iOS).
 const REEL_POSTER_TIME = 35;
+const REEL_POSTER_FALLBACK = "/videos/reel_poster.jpg";
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface ReelSectionProps {
@@ -49,16 +51,50 @@ export default function ReelSection({
         overflow: "hidden",
       }}
     >
+      <div
+        className="reel-header-wrapper"
+        style={{
+          background: "var(--off-white)",
+          padding: "0 48px 64px 48px",
+        }}
+      >
+        <div
+          className="reel-header"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            paddingBottom: "20px",
+            background: "var(--off-white)",
+            color: "var(--near-black)",
+            borderBottom: "1px solid var(--light-gray)",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-bricolage), sans-serif",
+              fontWeight: 700,
+              fontSize: "13px",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--near-black)",
+            }}
+          >
+            Reel
+          </span>
+        </div>
+      </div>
       {!playing ? (
         <PlayPoster
           onPlay={() => setPlaying(true)}
           videoSrc={REEL_URL}
+          videoSrcMp4={REEL_MP4_URL}
           posterTime={REEL_POSTER_TIME}
         />
       ) : (
         <div style={{ width: "100%", aspectRatio: "16/9" }}>
           {REEL_URL ? (
-            <VideoPlayer src={REEL_URL} autoPlay />
+            <VideoPlayer src={REEL_URL} srcMp4={REEL_MP4_URL} autoPlay />
           ) : (
             <ReelPlaceholder />
           )}
@@ -71,20 +107,23 @@ export default function ReelSection({
 function PlayPoster({
   onPlay,
   videoSrc,
+  videoSrcMp4,
   posterTime,
 }: {
   onPlay: () => void;
   videoSrc: string;
+  videoSrcMp4?: string;
   posterTime: number;
 }) {
   const [posterUrl, setPosterUrl] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = document.createElement("video");
     video.muted = true;
     video.playsInline = true;
     video.preload = "auto";
+    const supportsWebM = video.canPlayType("video/webm") !== "";
+    const src = !supportsWebM && videoSrcMp4 ? videoSrcMp4 : videoSrc;
 
     const seekToFrame = () => {
       const target = video.duration >= posterTime ? posterTime : video.duration * 0.5;
@@ -109,13 +148,13 @@ function PlayPoster({
 
     video.addEventListener("loadeddata", seekToFrame);
     video.addEventListener("seeked", onSeeked);
-    video.src = videoSrc;
+    video.src = src;
 
     return () => {
       video.removeEventListener("loadeddata", seekToFrame);
       video.removeEventListener("seeked", onSeeked);
     };
-  }, [videoSrc, posterTime]);
+  }, [videoSrc, videoSrcMp4, posterTime]);
 
   return (
     <div
@@ -128,8 +167,8 @@ function PlayPoster({
         justifyContent: "center",
         gap: "32px",
         cursor: "pointer",
-        background: posterUrl
-          ? `url(${posterUrl}) center/cover`
+        background: (posterUrl || REEL_POSTER_FALLBACK)
+          ? `url(${posterUrl || REEL_POSTER_FALLBACK}) center/cover`
           : "var(--near-black)",
         position: "relative",
         transition: "background 0.3s ease",
@@ -139,7 +178,7 @@ function PlayPoster({
       aria-label="Play reel"
     >
       {/* Dark overlay so play button stands out */}
-      {posterUrl && (
+      {(posterUrl || REEL_POSTER_FALLBACK) && (
         <div
           style={{
             position: "absolute",

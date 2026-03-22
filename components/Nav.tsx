@@ -133,13 +133,15 @@ export default function Nav() {
         </svg>
       </button>
 
-      {/* Mobile overlay menu */}
+      {/* Mobile overlay menu — frosted glass (backup: Nav.mobile-menu-solid-backup.md) */}
       {mobileOpen && (
         <div
           style={{
             position: "fixed",
             inset: 0,
-            background: "var(--near-black)",
+            background: "rgba(17, 16, 16, 0.5)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
             zIndex: 101,
             display: "flex",
             flexDirection: "column",
@@ -178,8 +180,9 @@ export default function Nav() {
                 fontWeight: 700,
                 fontSize: "24px",
                 letterSpacing: "0.05em",
-                color: "white",
+                color: "rgba(255,255,255,0.95)",
                 textDecoration: "none",
+                textShadow: "0 1px 2px rgba(0,0,0,0.3)",
               }}
             >
               {label}

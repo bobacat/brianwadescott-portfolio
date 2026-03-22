@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "posters:dr-pepper": "bash scripts/generate-video-posters.sh dr-pepper",
     "dev": "next dev",
     "dev:mobile": "next dev --hostname 0.0.0.0",
     "mobile-qr": "node scripts/mobile-qr.js",

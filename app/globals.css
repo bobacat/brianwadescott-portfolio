@@ -106,13 +106,31 @@ body {
     gap: 60px !important;
   }
 
-  .about-teaser-stats {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
+  .about-header {
+    margin-bottom: 40px !important;
   }
 
-  .about-teaser-stats > * {
-    margin-top: 0 !important;
+  .about-teaser-bento {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    min-height: 0 !important;
+  }
+
+  .bento-card-tall {
+    grid-row: auto !important;
+  }
+
+  .bento-card {
+    padding: 24px !important;
+  }
+
+  /* Reel header — match work-header compact size and width */
+  .reel-header-wrapper {
+    padding: 0 24px 64px 24px !important;
+  }
+
+  .reel-header {
+    padding-bottom: 20px !important;
   }
 
   /* Clients — 2 cols on mobile */
@@ -239,6 +257,16 @@ body {
   }
 }
 
+/* Hero: full-width in landscape (no pillarboxing on mobile landscape) */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hero-section {
+    padding: 0 0 20px 0 !important;
+  }
+
+  .hero-scroll-hint {
+    left: 24px !important;
+  }
+}
 
 /* ---- ANIMATIONS ---- */
 @keyframes fadeUp {

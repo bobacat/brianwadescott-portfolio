@@ -38,7 +38,19 @@ if (url) {
   } catch {
     console.log("   Install qrcode-terminal for QR: npm install -D qrcode-terminal\n");
   }
-  console.log(`   Or open: ${url}\n`);
+  console.log(`   Or open on your phone: ${url}\n`);
+
+  // Open QR code in browser (works when terminal QR doesn't display)
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+  try {
+    const { execSync } = require("child_process");
+    const open = process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
+    execSync(`${open} "${qrImageUrl}"`, { stdio: "ignore" });
+    console.log("   Opened QR code in your browser — scan it with your phone.\n");
+  } catch {
+    console.log("   Or open this in your browser to see the QR code:\n");
+    console.log(`   ${qrImageUrl}\n`);
+  }
 } else {
   console.log("   Could not detect local IP. Run: npm run dev:mobile");
   console.log("   Then check the terminal for the Network URL (e.g. http://192.168.x.x:3000)");
