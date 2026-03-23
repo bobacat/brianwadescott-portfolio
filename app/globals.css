@@ -99,6 +99,11 @@ body {
     margin-bottom: 40px !important;
   }
 
+  /* Case brief divider: no margin (section padding provides gap, avoids body bg showing through) */
+  .case-images-section .case-brief-divider {
+    margin-bottom: 0 !important;
+  }
+
   /* About teaser — stack */
   .about-teaser-section {
     padding: 80px 24px !important;
@@ -199,14 +204,14 @@ body {
 
   /* Case study brief/role — stack */
   .brief-role-section {
-    padding: 80px 24px !important;
+    padding: 0 24px 80px !important;
     grid-template-columns: 1fr !important;
     gap: 48px !important;
   }
 
-  /* Case study images */
+  /* Case study images (now before brief/role) */
   .case-images-section {
-    padding: 0 24px 80px !important;
+    padding: 80px 24px 32px !important;
   }
 
   /* Image layout — full width on mobile */

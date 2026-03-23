@@ -299,11 +299,48 @@ export default async function CaseStudyPage({ params }: Props) {
         ))}
       </section>
 
-      {/* ── D. BRIEF + ROLE (or CONCEPT) ── */}
+      {/* ── D. VISUALS (before brief for mobile-friendly flow) ── */}
+      <section
+        className="case-images-section"
+        style={{
+          padding: "80px 48px 48px",
+          background: isDark ? fm.bg : undefined,
+        }}
+      >
+        <ImageLayout images={fm.images} accent={fm.accent} isDark={isDark} />
+        {/* Divider: matches work-header style, no margin (padding above creates gap) */}
+        <div
+          className="work-header case-brief-divider"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            marginTop: "48px",
+            marginBottom: 0,
+            paddingBottom: "20px",
+            borderBottom: isDark ? `1px solid ${fm.accent}40` : "1px solid var(--light-gray)",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-bricolage), sans-serif",
+              fontWeight: 700,
+              fontSize: "13px",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: isDark ? "rgba(255,255,255,0.9)" : "var(--near-black)",
+            }}
+          >
+            About
+          </span>
+        </div>
+      </section>
+
+      {/* ── E. BRIEF + ROLE (or CONCEPT) ── */}
       <section
         className="brief-role-section"
         style={{
-          padding: "120px 48px",
+          padding: "0 48px 120px",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "80px",
@@ -358,7 +395,7 @@ export default async function CaseStudyPage({ params }: Props) {
         </div>
       </section>
 
-      {/* ── D2. PRODUCTION (optional) ── */}
+      {/* ── E2. PRODUCTION (optional) ── */}
       {fm.production && (
         <section
           className="production-section"
@@ -393,17 +430,6 @@ export default async function CaseStudyPage({ params }: Props) {
           </p>
         </section>
       )}
-
-      {/* ── E. VISUALS ── */}
-      <section
-        className="case-images-section"
-        style={{
-          padding: "0 48px 120px",
-          background: isDark ? fm.bg : undefined,
-        }}
-      >
-        <ImageLayout images={fm.images} accent={fm.accent} isDark={isDark} />
-      </section>
 
       {/* ── F. OUTCOME ── */}
       <section
