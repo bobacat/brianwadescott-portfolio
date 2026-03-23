@@ -9,6 +9,7 @@ interface VideoPlayerProps {
   autoPlay?: boolean;
   title?: string; // Subtle overlay when paused (e.g. clip name)
   objectFit?: "cover" | "contain"; // contain = fit proportionally without cropping (default: cover)
+  defaultMuted?: boolean; // When false, start with sound (e.g. reel after user clicks play)
 }
 
 export default function VideoPlayer({
@@ -18,13 +19,14 @@ export default function VideoPlayer({
   autoPlay = false,
   title,
   objectFit = "cover",
+  defaultMuted = true,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [muted, setMuted] = useState(true); // Start muted — required for playback to work on mobile
+  const [muted, setMuted] = useState(defaultMuted);
   const [showControls, setShowControls] = useState(false);
   const [generatedPoster, setGeneratedPoster] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);

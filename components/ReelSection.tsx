@@ -35,6 +35,9 @@ export default function ReelSection({
   standalone = false,
 }: ReelSectionProps) {
   const [playing, setPlaying] = useState(false);
+  const headerFooterBg = standalone ? "#111010" : "var(--accent)";
+  const headerFooterColor = standalone ? "rgba(255,255,255,0.9)" : "var(--near-black)";
+  const headerFooterBorder = standalone ? "1px solid rgba(255,255,255,0.2)" : "1px solid rgba(0,0,0,0.12)";
 
   // When user clicked hero, skip poster and auto-play immediately
   useEffect(() => {
@@ -57,7 +60,7 @@ export default function ReelSection({
       <div
         className="reel-header-wrapper"
         style={{
-          background: "var(--accent)",
+          background: headerFooterBg,
           padding: "48px 48px 64px 48px",
         }}
       >
@@ -68,9 +71,9 @@ export default function ReelSection({
             justifyContent: "space-between",
             alignItems: "baseline",
             paddingBottom: "20px",
-            background: "var(--accent)",
-            color: "var(--near-black)",
-            borderBottom: "1px solid rgba(0,0,0,0.12)",
+            background: headerFooterBg,
+            color: headerFooterColor,
+            borderBottom: headerFooterBorder,
           }}
         >
           <span
@@ -80,7 +83,7 @@ export default function ReelSection({
               fontSize: "13px",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              color: "var(--near-black)",
+              color: headerFooterColor,
             }}
           >
             Reel
@@ -97,7 +100,7 @@ export default function ReelSection({
       ) : (
         <div style={{ width: "100%", aspectRatio: "16/9" }}>
           {REEL_URL ? (
-            <VideoPlayer src={REEL_URL} autoPlay />
+            <VideoPlayer src={REEL_URL} autoPlay defaultMuted={false} />
           ) : (
             <ReelPlaceholder />
           )}
@@ -106,7 +109,7 @@ export default function ReelSection({
       <div
         className="reel-footer"
         style={{
-          background: "var(--accent)",
+          background: headerFooterBg,
           padding: "48px 48px 64px",
         }}
       />
