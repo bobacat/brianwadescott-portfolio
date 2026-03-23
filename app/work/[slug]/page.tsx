@@ -341,58 +341,111 @@ export default async function CaseStudyPage({ params }: Props) {
         className="brief-role-section"
         style={{
           padding: "0 48px 120px",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "80px",
           background: isDark ? fm.bg : undefined,
         }}
       >
-        <div>
-          <p
-            style={{
-              fontSize: "11px",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
-              marginBottom: "24px",
-            }}
-          >
-            The Brief
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-dm-sans), sans-serif",
-              fontSize: "17px",
-              lineHeight: 1.7,
-              color: isDark ? "rgba(255,255,255,0.85)" : "#4A4845",
-            }}
-          >
-            {fm.brief}
-          </p>
+        <div
+          className="brief-role-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "80px",
+          }}
+        >
+          <div>
+            <p
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
+                marginBottom: "24px",
+              }}
+            >
+              The Brief
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--font-dm-sans), sans-serif",
+                fontSize: "17px",
+                lineHeight: 1.7,
+                color: isDark ? "rgba(255,255,255,0.85)" : "#4A4845",
+              }}
+            >
+              {fm.brief}
+            </p>
+          </div>
+          <div>
+            <p
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
+                marginBottom: "24px",
+              }}
+            >
+              {fm.concept ? "The Concept" : "My Role"}
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--font-dm-sans), sans-serif",
+                fontSize: "17px",
+                lineHeight: 1.7,
+                color: isDark ? "rgba(255,255,255,0.85)" : "#4A4845",
+              }}
+            >
+              {fm.concept || fm.roleDetail}
+            </p>
+          </div>
         </div>
-        <div>
-          <p
-            style={{
-              fontSize: "11px",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              color: isDark ? "rgba(255,255,255,0.55)" : "var(--mid-gray)",
-              marginBottom: "24px",
-            }}
-          >
-            {fm.concept ? "The Concept" : "My Role"}
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-dm-sans), sans-serif",
-              fontSize: "17px",
-              lineHeight: 1.7,
-              color: isDark ? "rgba(255,255,255,0.85)" : "#4A4845",
-            }}
-          >
-            {fm.concept || fm.roleDetail}
-          </p>
-        </div>
+
+        {fm.credits && (
+          <>
+            <div
+              style={{
+                marginTop: "48px",
+                marginBottom: "16px",
+                borderTop: isDark
+                  ? `1px solid ${fm.accent}40`
+                  : "1px solid var(--light-gray)",
+              }}
+            />
+            <div
+              className="case-credits"
+              style={{
+                overflowX: "auto",
+                overflowY: "hidden",
+                WebkitOverflowScrolling: "touch",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: "var(--font-dm-sans), sans-serif",
+                  fontSize: "11px",
+                  letterSpacing: "0.1em",
+                  color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+                  fontWeight: 400,
+                  margin: 0,
+                }}
+              >
+                {fm.credits.split("  ·  ").map((item, i, arr) => {
+                  const doubleSpaceIdx = item.indexOf("  ");
+                  const label = doubleSpaceIdx >= 0 ? item.slice(0, doubleSpaceIdx) : item;
+                  const name = doubleSpaceIdx >= 0 ? item.slice(doubleSpaceIdx + 2) : "";
+                  return (
+                    <span key={i}>
+                      <span style={{ textTransform: "uppercase" }}>{label}</span>
+                      {name && `  ${name}`}
+                      {i < arr.length - 1 ? "  ·  " : ""}
+                    </span>
+                  );
+                })}
+              </p>
+            </div>
+          </>
+        )}
       </section>
 
       {/* ── E2. PRODUCTION (optional) ── */}

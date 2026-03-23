@@ -220,8 +220,22 @@ body {
   /* Case study brief/role — stack */
   .brief-role-section {
     padding: 0 24px 80px !important;
+  }
+
+  .brief-role-grid {
     grid-template-columns: 1fr !important;
     gap: 48px !important;
+  }
+
+  /* Case credits — horizontal scroll on mobile */
+  .case-credits {
+    margin-left: -24px;
+    margin-right: -24px;
+    padding: 0 24px;
+  }
+
+  .case-credits p {
+    min-width: max-content;
   }
 
   /* Case study images (now before brief/role) */

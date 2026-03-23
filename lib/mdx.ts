@@ -50,6 +50,7 @@ export interface ProjectFrontmatter {
   images: ProjectImage[];
   nextProject: string;
   order: number;
+  credits?: string; // Optional: e.g. "Directed by  Name  ·  Producer  Name"
 }
 
 export interface AboutFrontmatter {
