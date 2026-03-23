@@ -103,6 +103,13 @@ export default function ReelSection({
           )}
         </div>
       )}
+      <div
+        className="reel-footer"
+        style={{
+          background: "#111010",
+          padding: "48px 48px 64px",
+        }}
+      />
     </section>
   );
 }
