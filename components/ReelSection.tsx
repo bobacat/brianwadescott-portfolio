@@ -57,7 +57,7 @@ export default function ReelSection({
       <div
         className="reel-header-wrapper"
         style={{
-          background: "#111010",
+          background: "var(--accent)",
           padding: "48px 48px 64px 48px",
         }}
       >
@@ -68,9 +68,9 @@ export default function ReelSection({
             justifyContent: "space-between",
             alignItems: "baseline",
             paddingBottom: "20px",
-            background: "#111010",
-            color: "rgba(255,255,255,0.9)",
-            borderBottom: "1px solid rgba(255,255,255,0.2)",
+            background: "var(--accent)",
+            color: "var(--near-black)",
+            borderBottom: "1px solid rgba(0,0,0,0.12)",
           }}
         >
           <span
@@ -80,7 +80,7 @@ export default function ReelSection({
               fontSize: "13px",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.9)",
+              color: "var(--near-black)",
             }}
           >
             Reel
@@ -97,7 +97,7 @@ export default function ReelSection({
       ) : (
         <div style={{ width: "100%", aspectRatio: "16/9" }}>
           {REEL_URL ? (
-            <VideoPlayer src={REEL_URL} srcMp4={REEL_MP4_URL} autoPlay />
+            <VideoPlayer src={REEL_URL} autoPlay />
           ) : (
             <ReelPlaceholder />
           )}
@@ -106,7 +106,7 @@ export default function ReelSection({
       <div
         className="reel-footer"
         style={{
-          background: "#111010",
+          background: "var(--accent)",
           padding: "48px 48px 64px",
         }}
       />

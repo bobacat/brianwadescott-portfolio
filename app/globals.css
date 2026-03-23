@@ -44,6 +44,11 @@ body {
   display: none;
 }
 
+/* Hero subhead line break — hidden on desktop, shown on mobile */
+.hero-subhead-br {
+  display: none;
+}
+
 /* Hide hero custom cursor on touch devices (no hover) */
 @media (hover: none) {
   .hero-cursor {
@@ -70,6 +75,26 @@ body {
   /* Hero */
   .hero-section {
     padding: 0 24px 48px !important;
+  }
+
+  /* Hero subhead: Creative Director — / Los Angeles on separate lines */
+  .hero-subhead-br {
+    display: block;
+  }
+
+  /* Hero bottom: stack manifesto + metadata for breathing room */
+  .hero-bottom {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 24px !important;
+  }
+
+  .hero-manifesto {
+    max-width: 100% !important;
+  }
+
+  .hero-meta {
+    text-align: left !important;
   }
 
   /* Reel page hero — needs nav clearance (shorter 45vh) */
@@ -227,15 +252,9 @@ body {
     gap: 48px !important;
   }
 
-  /* Case credits — horizontal scroll on mobile */
+  /* Case credits — horizontal scroll on mobile, no negative margins to avoid layout issues */
   .case-credits {
-    margin-left: -24px;
-    margin-right: -24px;
-    padding: 0 24px;
-  }
-
-  .case-credits p {
-    min-width: max-content;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Case study images (now before brief/role) */
@@ -253,6 +272,13 @@ body {
   /* Outcome section */
   .case-outcome {
     padding: 80px 24px !important;
+  }
+
+  /* Stats grid — stack on mobile to avoid horizontal overflow */
+  .case-outcome-stats {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    margin-bottom: 48px !important;
   }
 
   /* Next project link */

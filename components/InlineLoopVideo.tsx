@@ -2,7 +2,6 @@
 
 interface InlineLoopVideoProps {
   src: string;
-  srcMp4?: string;
   poster?: string;
   objectFit?: "cover" | "contain";
 }
@@ -13,7 +12,6 @@ interface InlineLoopVideoProps {
  */
 export default function InlineLoopVideo({
   src,
-  srcMp4,
   poster,
   objectFit = "cover",
 }: InlineLoopVideoProps) {
@@ -23,6 +21,7 @@ export default function InlineLoopVideo({
       loop
       muted
       playsInline
+      preload="auto"
       poster={poster ? encodeURI(poster) : undefined}
       style={{
         position: "absolute",
@@ -33,7 +32,6 @@ export default function InlineLoopVideo({
         objectPosition: objectFit === "contain" ? "center" : undefined,
       }}
     >
-      {srcMp4 && <source src={encodeURI(srcMp4)} type="video/mp4" />}
       <source src={encodeURI(src)} type="video/webm" />
     </video>
   );

@@ -1,36 +1,66 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 
 interface CaseHeroVideoProps {
   heroVideo: string;
-  heroVideoMp4?: string;
   heroImage: string;
   bg: string;
 }
 
 /**
- * Hero video with iOS/mobile fallback.
- * iOS Safari doesn't support WebM — we show hero image or use MP4 when available.
+ * Hero background video. Uses WebM.
+ * Mobile: tap-to-play overlay (autoplay often blocked without user gesture).
  */
 export default function CaseHeroVideo({
   heroVideo,
-  heroVideoMp4,
   heroImage,
   bg,
 }: CaseHeroVideoProps) {
-  const [useFallback, setUseFallback] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasError, setHasError] = useState(false);
+  const [userActivated, setUserActivated] = useState(false);
 
-  // useLayoutEffect runs before paint — avoids black flash on iOS
-  useLayoutEffect(() => {
-    const video = document.createElement("video");
-    const supportsWebM = video.canPlayType("video/webm") !== "";
-    const hasMp4 = Boolean(heroVideoMp4);
-    setUseFallback(!supportsWebM && !hasMp4);
-  }, [heroVideoMp4]);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || hasError) return;
 
-  // Show image fallback when WebM unsupported (iOS) and no MP4
-  if (useFallback === true) {
+    const attemptPlay = () => {
+      video.muted = true;
+      video.play().then(() => setUserActivated(true)).catch(() => setHasError(true));
+    };
+
+    video.addEventListener("loadeddata", attemptPlay);
+    video.addEventListener("canplay", attemptPlay);
+    video.addEventListener("canplaythrough", attemptPlay);
+    video.addEventListener("error", () => setHasError(true));
+
+    if (video.readyState >= 2) attemptPlay();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) attemptPlay();
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(video);
+
+    return () => {
+      video.removeEventListener("loadeddata", attemptPlay);
+      video.removeEventListener("canplay", attemptPlay);
+      video.removeEventListener("canplaythrough", attemptPlay);
+      observer.disconnect();
+    };
+  }, [hasError]);
+
+  const handleTapToPlay = () => {
+    const video = videoRef.current;
+    if (!video || hasError) return;
+    video.muted = true;
+    video.play().then(() => setUserActivated(true)).catch(() => setHasError(true));
+  };
+
+  if (hasError) {
     return (
       <>
         <div
@@ -56,14 +86,15 @@ export default function CaseHeroVideo({
     );
   }
 
-  // Show video (WebM or MP4)
   return (
     <>
       <video
+        ref={videoRef}
+        playsInline
         autoPlay
         muted
         loop
-        playsInline
+        preload="auto"
         poster={heroImage}
         style={{
           position: "absolute",
@@ -75,17 +106,37 @@ export default function CaseHeroVideo({
           pointerEvents: "none",
         }}
       >
-        {heroVideoMp4 && (
-          <source src={heroVideoMp4} type="video/mp4" />
-        )}
         <source src={heroVideo} type="video/webm" />
       </video>
+      {/* Tap-to-play overlay for mobile (autoplay blocked without user gesture) */}
+      {!userActivated && (
+        <button
+          type="button"
+          onClick={handleTapToPlay}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            handleTapToPlay();
+          }}
+          aria-label="Play video"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+            zIndex: 1,
+          }}
+        />
+      )}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background: `linear-gradient(to bottom, transparent 0%, ${bg} 85%)`,
           pointerEvents: "none",
+          zIndex: 0,
         }}
       />
     </>

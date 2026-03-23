@@ -145,6 +145,7 @@ export default function Hero({ onReelClick }: HeroProps) {
       {/* ── TEXT CONTENT ── */}
       <div style={{ position: "relative", zIndex: 1, pointerEvents: "none" }}>
         <p
+          className="hero-subhead"
           style={{
             fontFamily: "var(--font-dm-sans), sans-serif",
             fontSize: "12px",
@@ -156,7 +157,9 @@ export default function Hero({ onReelClick }: HeroProps) {
             animation: "fadeUp 0.8s ease forwards 0.3s",
           }}
         >
-          Creative Director — Los Angeles
+          Creative Director —
+          <br className="hero-subhead-br" />
+          Los Angeles
         </p>
 
         <h1
@@ -180,6 +183,7 @@ export default function Hero({ onReelClick }: HeroProps) {
         </h1>
 
         <div
+          className="hero-bottom"
           style={{
             display: "flex",
             justifyContent: "space-between",
@@ -189,6 +193,7 @@ export default function Hero({ onReelClick }: HeroProps) {
           }}
         >
           <p
+            className="hero-manifesto"
             style={{
               fontFamily: "var(--font-bricolage), sans-serif",
               fontWeight: 500,
@@ -203,7 +208,7 @@ export default function Hero({ onReelClick }: HeroProps) {
             Some of them move.
           </p>
 
-          <div style={{ textAlign: "right" }}>
+          <div className="hero-meta" style={{ textAlign: "right" }}>
             <p
               style={{
                 fontFamily: "var(--font-dm-sans), sans-serif",

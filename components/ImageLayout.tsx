@@ -26,7 +26,6 @@ function MediaContent({ image, accent }: { image: ProjectImage; accent: string }
       return (
         <InlineLoopVideo
           src={image.src}
-          srcMp4={image.videoMp4}
           poster={image.poster}
           objectFit={image.objectFit === "contain" ? "contain" : "cover"}
         />
@@ -35,11 +34,10 @@ function MediaContent({ image, accent }: { image: ProjectImage; accent: string }
     return (
       <VideoPlayer
         src={image.src}
-        srcMp4={image.videoMp4}
         poster={image.poster}
         title={image.caption}
         autoPlay={false}
-        posterTime={0.5}
+        posterTime={image.poster ? undefined : 0.5}
         objectFit={image.objectFit === "contain" ? "contain" : "cover"}
       />
     );

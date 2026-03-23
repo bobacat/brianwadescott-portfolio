@@ -63,7 +63,6 @@ export default async function CaseStudyPage({ params }: Props) {
         {fm.heroVideo && (
           <CaseHeroVideo
             heroVideo={fm.heroVideo}
-            heroVideoMp4={fm.heroVideoMp4}
             heroImage={fm.heroImage}
             bg={fm.bg}
           />
@@ -496,6 +495,7 @@ export default async function CaseStudyPage({ params }: Props) {
       >
         {fm.stats && fm.stats.length > 0 && (
           <div
+            className="case-outcome-stats"
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${fm.stats.length}, 1fr)`,

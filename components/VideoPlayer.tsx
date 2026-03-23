@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 
 interface VideoPlayerProps {
   src: string;
-  srcMp4?: string; // MP4 fallback for iOS (no WebM)
   poster?: string;
   posterTime?: number; // Seconds, or 0.5 = 50% through (generates poster from video)
   autoPlay?: boolean;
@@ -14,7 +13,6 @@ interface VideoPlayerProps {
 
 export default function VideoPlayer({
   src,
-  srcMp4,
   poster,
   posterTime,
   autoPlay = false,
@@ -26,7 +24,7 @@ export default function VideoPlayer({
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true); // Start muted — required for playback to work on mobile
   const [showControls, setShowControls] = useState(false);
   const [generatedPoster, setGeneratedPoster] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -41,15 +39,12 @@ export default function VideoPlayer({
   }, []);
 
   // Generate poster from video at posterTime (e.g. 0.5 = 50% through)
-  // Use MP4 for poster on iOS (WebM doesn't load)
   useEffect(() => {
     if (!posterTime || poster || generatedPoster) return;
     const video = document.createElement("video");
     video.muted = true;
     video.playsInline = true;
     video.preload = "auto";
-    const supportsWebM = video.canPlayType("video/webm") !== "";
-    const posterSrc = !supportsWebM && srcMp4 ? srcMp4 : src;
     const seekToFrame = () => {
       const target =
         posterTime < 1 && posterTime > 0
@@ -76,12 +71,12 @@ export default function VideoPlayer({
     };
     video.addEventListener("loadeddata", seekToFrame);
     video.addEventListener("seeked", onSeeked);
-    video.src = posterSrc;
+    video.src = src;
     return () => {
       video.removeEventListener("loadeddata", seekToFrame);
       video.removeEventListener("seeked", onSeeked);
     };
-  }, [src, srcMp4, posterTime, poster, generatedPoster]);
+  }, [src, posterTime, poster, generatedPoster]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -134,17 +129,15 @@ export default function VideoPlayer({
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      video.play();
+      video.muted = true; // Ensure muted before play — required for mobile
+      video.play().catch(() => {});
     } else {
       video.pause();
     }
   }
 
   function toggleMute() {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setMuted(video.muted);
+    setMuted((prev) => !prev);
   }
 
   function seek(e: React.MouseEvent<HTMLDivElement>) {
@@ -204,10 +197,11 @@ export default function VideoPlayer({
           objectPosition: objectFit === "contain" ? "center" : undefined,
         }}
         playsInline
+        muted={muted}
+        preload="auto"
         poster={poster || generatedPoster || undefined}
         onClick={togglePlay}
       >
-        {srcMp4 && <source src={srcMp4} type="video/mp4" />}
         <source src={src} type="video/webm" />
       </video>
 
@@ -227,6 +221,10 @@ export default function VideoPlayer({
             pointerEvents: "all",
           }}
           onClick={togglePlay}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            togglePlay();
+          }}
           role="button"
           aria-label="Play video"
         >
