@@ -1,17 +1,15 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-
-const LOOP_VIDEO_URL = "/videos/reel_hero.webm";
+import { HERO_VIDEO_URL } from "@/components/HeroBackgroundVideo";
 
 interface HeroProps {
   onReelClick?: () => void;
 }
 
 export default function Hero({ onReelClick }: HeroProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const hasVideo = Boolean(LOOP_VIDEO_URL);
+  const hasVideo = Boolean(HERO_VIDEO_URL);
   const [cursorVisible, setCursorVisible] = useState(false);
 
   function handleReelClick() {
@@ -68,7 +66,6 @@ export default function Hero({ onReelClick }: HeroProps) {
           }}
         >
           <video
-            ref={videoRef}
             autoPlay
             muted
             loop
@@ -83,7 +80,7 @@ export default function Hero({ onReelClick }: HeroProps) {
               pointerEvents: "none",
             }}
           >
-            <source src={LOOP_VIDEO_URL} type="video/webm" />
+            <source src={HERO_VIDEO_URL} type="video/webm" />
           </video>
 
           {/* Gradient overlay */}

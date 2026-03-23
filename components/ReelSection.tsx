@@ -25,11 +25,14 @@ const REEL_POSTER_FALLBACK = "/videos/reel_poster.jpg";
 interface ReelSectionProps {
   reelAutoPlay?: boolean;
   onReelAutoPlayConsumed?: () => void;
+  /** When true, dark header styling for standalone /reel page */
+  standalone?: boolean;
 }
 
 export default function ReelSection({
   reelAutoPlay = false,
   onReelAutoPlayConsumed,
+  standalone = false,
 }: ReelSectionProps) {
   const [playing, setPlaying] = useState(false);
 
@@ -54,7 +57,7 @@ export default function ReelSection({
       <div
         className="reel-header-wrapper"
         style={{
-          background: "var(--off-white)",
+          background: standalone ? "#111010" : "var(--off-white)",
           padding: "0 48px 64px 48px",
         }}
       >
@@ -65,9 +68,9 @@ export default function ReelSection({
             justifyContent: "space-between",
             alignItems: "baseline",
             paddingBottom: "20px",
-            background: "var(--off-white)",
-            color: "var(--near-black)",
-            borderBottom: "1px solid var(--light-gray)",
+            background: standalone ? "#111010" : "var(--off-white)",
+            color: standalone ? "rgba(255,255,255,0.9)" : "var(--near-black)",
+            borderBottom: standalone ? "1px solid rgba(255,255,255,0.2)" : "1px solid var(--light-gray)",
           }}
         >
           <span
@@ -77,7 +80,7 @@ export default function ReelSection({
               fontSize: "13px",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              color: "var(--near-black)",
+              color: standalone ? "rgba(255,255,255,0.9)" : "var(--near-black)",
             }}
           >
             Reel

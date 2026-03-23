@@ -54,7 +54,7 @@ export default async function CaseStudyPage({ params }: Props) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "120px 48px 64px",
+          padding: "var(--nav-height) 48px 64px",
           position: "relative",
           overflow: "hidden",
         }}
@@ -120,7 +120,7 @@ export default async function CaseStudyPage({ params }: Props) {
           className="case-hero-back"
           style={{
             position: "absolute",
-            top: "120px",
+            top: "var(--nav-height)",
             left: "48px",
             fontFamily: "var(--font-dm-sans), sans-serif",
             fontSize: "12px",
@@ -140,7 +140,7 @@ export default async function CaseStudyPage({ params }: Props) {
           className="case-hero-tag"
           style={{
             position: "absolute",
-            top: "120px",
+            top: "var(--nav-height)",
             right: "48px",
             fontSize: "10px",
             letterSpacing: "0.15em",

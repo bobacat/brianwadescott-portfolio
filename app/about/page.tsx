@@ -31,7 +31,7 @@ export default function AboutPage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "120px 48px 80px",
+          padding: "var(--nav-height) 48px 80px",
           borderBottom: "1px solid var(--light-gray)",
           position: "relative",
           overflow: "hidden",
