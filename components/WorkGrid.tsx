@@ -79,7 +79,7 @@ export default function WorkGrid({ projects }: WorkGridProps) {
       id="work"
       className="work-section"
       style={{
-        padding: "120px 48px",
+        padding: "120px 48px 80px",
       }}
     >
       <div

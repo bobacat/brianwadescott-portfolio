@@ -12,10 +12,10 @@ export default function AboutTeaser() {
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gap: "120px",
-        alignItems: "center",
+        alignItems: "start",
       }}
     >
-      <div>
+      <div style={{ order: 0 }}>
         <div
           className="about-header"
           style={{
@@ -103,6 +103,7 @@ export default function AboutTeaser() {
           gridTemplateRows: "1fr 1fr",
           gap: "20px",
           minHeight: "340px",
+          order: 1,
         }}
       >
         <div

@@ -57,8 +57,8 @@ export default function ReelSection({
       <div
         className="reel-header-wrapper"
         style={{
-          background: standalone ? "#111010" : "var(--off-white)",
-          padding: "0 48px 64px 48px",
+          background: "#111010",
+          padding: "48px 48px 64px 48px",
         }}
       >
         <div
@@ -68,9 +68,9 @@ export default function ReelSection({
             justifyContent: "space-between",
             alignItems: "baseline",
             paddingBottom: "20px",
-            background: standalone ? "#111010" : "var(--off-white)",
-            color: standalone ? "rgba(255,255,255,0.9)" : "var(--near-black)",
-            borderBottom: standalone ? "1px solid rgba(255,255,255,0.2)" : "1px solid var(--light-gray)",
+            background: "#111010",
+            color: "rgba(255,255,255,0.9)",
+            borderBottom: "1px solid rgba(255,255,255,0.2)",
           }}
         >
           <span
@@ -80,7 +80,7 @@ export default function ReelSection({
               fontSize: "13px",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              color: standalone ? "rgba(255,255,255,0.9)" : "var(--near-black)",
+              color: "rgba(255,255,255,0.9)",
             }}
           >
             Reel
