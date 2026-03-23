@@ -28,11 +28,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://brianwadescott.com",
+    url: "https://www.brianwadescott.com",
     siteName: "Brian Wade Scott",
     title: "Brian Wade Scott — Creative Director",
-    description:
-      "Creative Director based in Los Angeles. 15+ years across film, broadcast, brand identity, and motion graphics.",
+    description: "I build worlds. Some of them move.",
     images: [
       {
         url: "/og-image.jpg",
@@ -45,10 +44,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Brian Wade Scott — Creative Director",
-    description:
-      "Creative Director based in Los Angeles. 15+ years across film, broadcast, brand identity, and motion graphics.",
+    description: "I build worlds. Some of them move.",
+    images: ["/og-image.jpg"],
   },
-  metadataBase: new URL("https://brianwadescott.com"),
+  metadataBase: new URL("https://www.brianwadescott.com"),
 };
 
 export default function RootLayout({
